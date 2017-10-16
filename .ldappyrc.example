@@ -1,0 +1,17 @@
+[root]
+rootDN = cn=admin,dc=example,dc=com
+;pominiecie spowoduje pytanie o hasło, do decyzji użytkownika
+;rootPW = ****
+
+[ldap]
+ldapHost = ldap://ldap-clone
+ldapBase = dc=example,dc=com
+;poprawne
+ldapUBase = ou=People
+
+[filter]
+userAttr = cn
+userFilter = (objectClass=inetOrgPerson)
+groupOfNames = (objectClass=groupOfNames)
+userId  = (&(uidNumber>=1000)(uidNumber<=1999)(objectClass=inetOrgPerson))
+groupId = (&(gidNumber>=1000)(gidNumber<=1999)(objectClass=posixGroup))
