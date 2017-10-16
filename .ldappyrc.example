@@ -6,8 +6,25 @@ rootDN = cn=admin,dc=example,dc=com
 [ldap]
 ldapHost = ldap://ldap-clone
 ldapBase = dc=example,dc=com
-;poprawne
 ldapUBase = ou=People
+ldapClass = [
+        "inetOrgPerson",
+        "posixAccount",
+        "shadowAccount"
+    ]
+ldapAttr = [
+        "cn",
+        "displayName",
+        "givenName",
+        "sn",
+        "mail",
+        "uid",
+        "uidNumber",
+        "gidNumber",
+        "homeDirectory",
+        "loginShell",
+        "userPassword"
+    ]
 
 [filter]
 userAttr = cn

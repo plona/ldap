@@ -16,6 +16,7 @@ import subprocess
 import time
 import ldap
 import pprint
+import json
 
 from dialog import Dialog
 
@@ -140,6 +141,15 @@ class myldap:
                     gl.append(aEl[len(aEl)-1][a][0])
         return  gl
 
+    def addUser(self):
+        self.d.msg(u"Jeszcze nie gotowe")
+        dn = "cn=" + self.c.ldapUserCn + "," + self.c.ldapUBase
+        cmds = json.loads(self.c.config.get("ldap", "ldapClass"))
+        print dn
+        print cmds
+        time.sleep(5)
+
+
 class mydialog:
     def __init__(self, c):
         self.c = c
@@ -222,16 +232,16 @@ class mydialog:
         else:
             return False
 
-    def getUserGroups(self, groupList=list()):
+    def getUserGroups(self, groupList=list(), title=""):
+        self.c.ldapUserGroups = list()
         items = list()
         for el in groupList:
             items.append((el, el, False))
         print items
-        code, l = self.myd.buildlist(text=u"Wybierz", items=items, visit_items=True,)
-        print l
-        print self.c.ldapUserGroups
-        self.c.ldapUserGroups = l
-        print self.c.ldapUserGroups
+        code, l = self.myd.buildlist(text=u"Wybierz", items=items, visit_items=True, title=title)
+        if self.myd.OK == code:
+            self.c.ldapUserGroups = l
+        return
 
 def main(argv):
 
@@ -259,23 +269,19 @@ def main(argv):
     d.myGetPass()
 
     l = myldap(c, d)  # try to bind to ldap server with root credentials (in __init__)
-    mUid = l.getMaxUidNumber() + 1
-    mGid = l.getMaxGidNumber() + 1
-    gl = l.getGroups()
-    d.getUserGroups(groupList=gl)
-
-    # print gl
-    quit()
 
     while True:
         what = d.myMenu()
         if   "1" == what:
+            mUid = l.getMaxUidNumber() + 1
+            mGid = l.getMaxGidNumber() + 1
             if d.getUserData(guId=str(max(mUid,mGid))):
                 if l.checkUser(c.ldapUserCn) > 0:
                     d.msg(u"Użytkownik: " + c.ldapUserCn + u" już istnieje!")
                     continue
-            # else:
-            #     continue
+            gl = l.getGroups()
+            d.getUserGroups(groupList=gl, title=u"Dodaj użytkownika do grup")
+            l.addUser()
         elif "2" == what:
             pass
         elif "3" == what:
